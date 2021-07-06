@@ -1,2 +1,4 @@
 # MediaPlayerJs
-Web media player with JS vanilla from scratch.
+Simple web media player with JS vanilla from scratch and extensible with plugins.
+
+# Plugin 1
