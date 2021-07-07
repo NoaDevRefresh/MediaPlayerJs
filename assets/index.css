@@ -36,3 +36,31 @@ main {
 .movie {
   width: 100%;
 }
+
+.button__speaker{
+  font-size: 20px;
+}
+
+.unmuted:before{
+  color: #000000;
+  z-index: -1;
+  content: '\01F50A';
+  font-size: 24px;
+  width: 24px;
+  height: 24px;
+  text-align: center;
+  line-height: 24px;
+ opacity: 0.7
+}
+.muted:before{
+  color: #000000;
+  z-index: -1;
+  content: '\01F507';
+  font-size: 24px;
+  width: 24px;
+  height: 24px;
+  text-align: center;
+  line-height: 24px;
+ opacity: 0.7
+}
+
