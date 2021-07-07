@@ -37,30 +37,20 @@ main {
   width: 100%;
 }
 
-.button__speaker{
-  font-size: 20px;
+.progress {
+  flex: 10;
+  position: relative;
+  display: flex;
+  flex-basis: 100%;
+  height: 10px;
+  transition: height 0.3s;
+  background: rgba(0,0,0,0.5);
+  cursor: ew-resize;
 }
 
-.unmuted:before{
-  color: #000000;
-  z-index: -1;
-  content: '\01F50A';
-  font-size: 24px;
-  width: 24px;
-  height: 24px;
-  text-align: center;
-  line-height: 24px;
- opacity: 0.7
+.progress__filled {
+  width: 50%;
+  background: #ffc600;
+  flex: 0;
+  flex-basis: 50%;
 }
-.muted:before{
-  color: #000000;
-  z-index: -1;
-  content: '\01F507';
-  font-size: 24px;
-  width: 24px;
-  height: 24px;
-  text-align: center;
-  line-height: 24px;
- opacity: 0.7
-}
-

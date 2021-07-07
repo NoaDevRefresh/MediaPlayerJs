@@ -24,7 +24,8 @@ function SimpleMediaPlayer(config){
   SimpleMediaPlayer.prototype.unmute = function(){
     this.media.muted = false;
   }
-  SimpleMediaPlayer.prototype.toggleMuted = function(){
+  SimpleMediaPlayer.prototype.toggleMute = function(){
     this.media.muted = !this.media.muted;
   }
+  
   export default SimpleMediaPlayer;
