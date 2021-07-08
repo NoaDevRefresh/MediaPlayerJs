@@ -1,6 +1,14 @@
 import SimpleMediaPlayer from './SimpleMediaPlayer.js';
 import AutoPlay from './plugins/AutoPlay.js';
 
+  //DEFINITIONS/////////
+  const playerSchema = document.querySelector('.player');
+  const video = document.querySelector('video.movie');
+  const player = new SimpleMediaPlayer({
+    el: video, 
+    plugins: [new AutoPlay()],
+    });
+  
 //FUNCTIONS///////
 function initMediaPlayer(){
   //toggleButtons
@@ -23,17 +31,12 @@ function handleRangeUpdate() {
     video[this.name] = this.value;
   }
   function moveProgress(e) {
-      console.log(e);
     const scrubTime = (e.offsetX / progress.offsetWidth) * video.duration;
     video.currentTime = scrubTime;
   }
-  //DEFINITIONS/////////
-const playerSchema = document.querySelector('.player');
-const video = document.querySelector('video.movie');
-const player = new SimpleMediaPlayer({el:video, plugins:[
-    //Commented for development 
-    new AutoPlay()
-]});
+  function skip(){
+    video.currentTime += parseFloat(this.dataset.skip);;
+}
 
 //CONTROLS///////
 const button__play = document.querySelector('.button__player');
@@ -42,6 +45,7 @@ const progress = playerSchema.querySelector('.progress');
 const progressBar = playerSchema.querySelector('.progress__filled');
 const skipButtons = playerSchema.querySelectorAll('[data-skip]');
 const ranges = playerSchema.querySelectorAll('.player__slider');
+const fullScreenButton = document.querySelector('.full__screen');
 
 //EVENTS////////
 //Page charges
@@ -54,23 +58,31 @@ button__play.onclick = () => {
 //Muted button
 button__speaker.onclick = () => {
     if (player.media.muted) {
-        //player.unmute();
-        player.muted = false;
+        player.unmute();
       } else {
-        //player.mute();
-        player.muted = true;
+        player.mute();
       }
     toggleButtonMute();
 }
+function toggleFullScreen(){
+  fullScreen = !fullScreen;
+  fullScreen ? video.requestFullscreen() : video.exitFullscreen();
+}
 
 video.addEventListener('timeupdate', handleProgress);
+video.onclick = () => {
+  player.togglePlay();
+  toggleButtonPlay();
+}
 //Ranges for volume and progress
 ranges.forEach(range => range.addEventListener('change',handleRangeUpdate))
 ranges.forEach(range => range.addEventListener('mousemove',handleRangeUpdate))
 //Handle calcs and change of progress
 let mousedown = false;
-console.log(progressBar);
 progress.addEventListener('click', moveProgress);
 progress.addEventListener('mousemove', (e) => mousedown && moveProgress(e));
 progress.addEventListener('mousedown', () => mousedown = true);
 progress.addEventListener('mouseup', () => mousedown = false);
+skipButtons.forEach(button => button.addEventListener('click', skip));
+let fullScreen = false;
+fullScreenButton.addEventListener('click', toggleFullScreen);
