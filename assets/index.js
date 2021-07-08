@@ -2,6 +2,11 @@ import SimpleMediaPlayer from './SimpleMediaPlayer.js';
 import AutoPlay from './plugins/AutoPlay.js';
 
 //FUNCTIONS///////
+function initMediaPlayer(){
+  //toggleButtons
+  toggleButtonPlay();
+  toggleButtonMute();
+}
 function toggleButtonMute(){
     const icon = player.media.muted ? '🔇' : '🔈';
     button__speaker.textContent = icon;
@@ -27,7 +32,7 @@ const playerSchema = document.querySelector('.player');
 const video = document.querySelector('video.movie');
 const player = new SimpleMediaPlayer({el:video, plugins:[
     //Commented for development 
-    //new AutoPlay()
+    new AutoPlay()
 ]});
 
 //CONTROLS///////
@@ -39,6 +44,8 @@ const skipButtons = playerSchema.querySelectorAll('[data-skip]');
 const ranges = playerSchema.querySelectorAll('.player__slider');
 
 //EVENTS////////
+//Page charges
+document.addEventListener("DOMContentLoaded", initMediaPlayer());
 //play/pause button
 button__play.onclick = () => {
     player.togglePlay();
@@ -46,9 +53,16 @@ button__play.onclick = () => {
 }
 //Muted button
 button__speaker.onclick = () => {
-    player.toggleMute();
+    if (player.media.muted) {
+        //player.unmute();
+        player.muted = false;
+      } else {
+        //player.mute();
+        player.muted = true;
+      }
     toggleButtonMute();
 }
+
 video.addEventListener('timeupdate', handleProgress);
 //Ranges for volume and progress
 ranges.forEach(range => range.addEventListener('change',handleRangeUpdate))
