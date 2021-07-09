@@ -27,6 +27,7 @@ function toggleButtonPlay(){
     const icon = player.media.paused ? '►' : '❚ ❚';
     button__play.textContent = icon;
 }
+//Volume and speed ranges
 function handleRangeUpdate() {
     video[this.name] = this.value;
   }
