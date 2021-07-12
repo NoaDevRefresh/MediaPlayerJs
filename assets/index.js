@@ -1,12 +1,13 @@
 import SimpleMediaPlayer from './SimpleMediaPlayer.js';
 import AutoPlay from './plugins/AutoPlay.js';
+import AutoPause from './plugins/AutoPause.js';
 
   //DEFINITIONS/////////
   const playerSchema = document.querySelector('.player');
   const video = document.querySelector('video.movie');
   const player = new SimpleMediaPlayer({
     el: video, 
-    plugins: [new AutoPlay()],
+    plugins: [new AutoPlay(), new AutoPause()],
     });
   
 //FUNCTIONS///////
