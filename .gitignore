@@ -10,3 +10,7 @@
 
 # node
 node_modules/
+
+# parcel
+.dist/
+.cache

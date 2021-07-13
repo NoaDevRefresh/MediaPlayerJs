@@ -9,7 +9,13 @@ import AutoPause from './plugins/AutoPause.js';
     el: video, 
     plugins: [new AutoPlay(), new AutoPause()],
     });
-  
+    
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/serviceWorker.js').catch(error => {
+        console.log(error.message);
+      });
+    }
+    
 //FUNCTIONS///////
 function initMediaPlayer(){
   //toggleButtons
@@ -88,3 +94,10 @@ progress.addEventListener('mouseup', () => mousedown = false);
 skipButtons.forEach(button => button.addEventListener('click', skip));
 let fullScreen = false;
 fullScreenButton.addEventListener('click', toggleFullScreen);
+
+if('serviceWorker' in Navigator){
+  navigator.serviceWorker.register('/serviceWorker.js')
+  .catch(error => {
+    console.log(error.message);
+  });
+}
