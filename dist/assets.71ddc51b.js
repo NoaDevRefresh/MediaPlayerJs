@@ -117,131 +117,263 @@ parcelRequire = (function (modules, cache, entry, globalName) {
   }
 
   return newRequire;
-})({"serviceWorker.js":[function(require,module,exports) {
-function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
+})({"assets/SimpleMediaPlayer.ts":[function(require,module,exports) {
+"use strict";
 
-function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
-
-var VERSION = 'v1';
-self.addEventListener('install', function (event) {
-  event.waitUntil(precache());
-});
-self.addEventListener('fetch', function (event) {
-  var request = event.request;
-
-  if (request.method !== 'GET') {
-    return;
-  } //search for the resource in cache
-
-
-  event.respondWith(cachedResponse(request)); //update the cache
-
-  event.waitUntil(updateCache(request));
+Object.defineProperty(exports, "__esModule", {
+  value: true
 });
 
-function precache() {
-  return _precache.apply(this, arguments);
+var SimpleMediaPlayer =
+/** @class */
+function () {
+  function SimpleMediaPlayer(config) {
+    this.media = config.el;
+    this.plugins = config.plugins || []; //Default value of empty array to prevent wrong state.
+
+    this.initPlugins();
+  }
+
+  SimpleMediaPlayer.prototype.initPlugins = function () {
+    var _this = this;
+
+    this.plugins.forEach(function (plugin) {
+      plugin.run(_this); //Method run must be implemented for each active plugin
+    });
+  };
+
+  SimpleMediaPlayer.prototype.play = function () {
+    this.media.play();
+  };
+
+  SimpleMediaPlayer.prototype.pause = function () {
+    this.media.pause();
+  };
+
+  SimpleMediaPlayer.prototype.togglePlay = function () {
+    this.media.paused ? this.play() : this.pause();
+  };
+
+  SimpleMediaPlayer.prototype.mute = function () {
+    this.media.muted = true;
+  };
+
+  SimpleMediaPlayer.prototype.unmute = function () {
+    this.media.muted = false;
+  };
+
+  return SimpleMediaPlayer;
+}(); // SimpleMediaPlayer.prototype.toggleMute = function(){
+//   this.media.muted = !this.media.muted;
+//}
+
+
+exports.default = SimpleMediaPlayer;
+},{}],"assets/plugins/AutoPlay.ts":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var AutoPlay =
+/** @class */
+function () {
+  function AutoPlay() {}
+
+  AutoPlay.prototype.run = function (player) {
+    if (!player.media.muted) {
+      player.mute();
+    } //browser won't let it play on charging for accessibility, unless it is muted
+
+
+    player.play();
+  };
+
+  ;
+  return AutoPlay;
+}();
+
+exports.default = AutoPlay;
+},{}],"assets/plugins/AutoPause.ts":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var AutoPause =
+/** @class */
+function () {
+  function AutoPause() {
+    this.threshold = 0.25;
+    this.handleIntersection = this.handleIntersection.bind(this);
+    this.handleVisibility = this.handleVisibility.bind(this);
+  }
+
+  AutoPause.prototype.run = function (player) {
+    this.player = player;
+    var observer = new IntersectionObserver(this.handleIntersection, {
+      threshold: this.threshold
+    });
+    observer.observe(this.player.media);
+    document.addEventListener('visibilitychange', this.handleVisibility);
+  };
+
+  AutoPause.prototype.handleIntersection = function (entries) {
+    var entry = entries[0];
+    var isVisible = entry.intersectionRatio >= this.threshold;
+    isVisible ? this.player.play() : this.player.pause();
+  };
+
+  AutoPause.prototype.handleVisibility = function () {
+    var isVisible = document.visibilityState === 'visible';
+    isVisible ? this.player.play() : this.player.pause();
+  };
+
+  return AutoPause;
+}();
+
+exports.default = AutoPause;
+},{}],"assets/index.ts":[function(require,module,exports) {
+"use strict";
+
+var __importDefault = this && this.__importDefault || function (mod) {
+  return mod && mod.__esModule ? mod : {
+    "default": mod
+  };
+};
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var SimpleMediaPlayer_1 = __importDefault(require("./SimpleMediaPlayer"));
+
+var AutoPlay_1 = __importDefault(require("./plugins/AutoPlay"));
+
+var AutoPause_1 = __importDefault(require("./plugins/AutoPause")); //DEFINITIONS/////////
+
+
+var playerSchema = document.querySelector('.player');
+var video = document.querySelector('video.movie');
+var player = new SimpleMediaPlayer_1.default({
+  el: video,
+  plugins: [new AutoPlay_1.default(), new AutoPause_1.default()]
+});
+
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register("/serviceWorker.js").catch(function (error) {
+    console.log(error.message);
+  });
+} //FUNCTIONS///////
+
+
+function toggleButtonMute() {
+  var icon = player.media.muted ? '🔇' : '🔈';
+  button__speaker.textContent = icon;
 }
 
-function _precache() {
-  _precache = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
-    var cache;
-    return regeneratorRuntime.wrap(function _callee$(_context) {
-      while (1) {
-        switch (_context.prev = _context.next) {
-          case 0:
-            cache = caches.open('VERSION');
-            _context.next = 3;
-            return cache;
-
-          case 3:
-            _context.sent.addAll([
-              /*         '/',
-                      '/index.html',
-                      '/assets/index.js',
-                      '/assets/SimpleMediaPlayer.js',
-                      '/assets/plugins/AutoPlay.js',
-                      '/assets/plugins/AutoPause.ts',
-                      '/assets/index.css',
-                      '/assets/video.mp4', */
-            ]);
-
-          case 4:
-          case "end":
-            return _context.stop();
-        }
-      }
-    }, _callee);
-  }));
-  return _precache.apply(this, arguments);
+function handleProgress() {
+  var percent = player.media.currentTime / player.media.duration * 100;
+  progressBar.style.flexBasis = percent + "%";
 }
 
-function cachedResponse(_x) {
-  return _cachedResponse.apply(this, arguments);
+function toggleButtonPlay() {
+  var icon = player.media.paused ? '►' : '❚ ❚';
+  button__play.textContent = icon;
+} //Volume and speed ranges
+
+
+function handleRangeUpdate() {
+  video[this.name] = this.value;
 }
 
-function _cachedResponse() {
-  _cachedResponse = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2(request) {
-    var cache, response;
-    return regeneratorRuntime.wrap(function _callee2$(_context2) {
-      while (1) {
-        switch (_context2.prev = _context2.next) {
-          case 0:
-            _context2.next = 2;
-            return caches.open('VERSION');
-
-          case 2:
-            cache = _context2.sent;
-            _context2.next = 5;
-            return cache.match(request);
-
-          case 5:
-            response = _context2.sent;
-            return _context2.abrupt("return", response || fetch(request));
-
-          case 7:
-          case "end":
-            return _context2.stop();
-        }
-      }
-    }, _callee2);
-  }));
-  return _cachedResponse.apply(this, arguments);
+function moveProgress(e) {
+  var scrubTime = e.offsetX / progress.offsetWidth * video.duration;
+  video.currentTime = scrubTime;
 }
 
-function updateCache(_x2) {
-  return _updateCache.apply(this, arguments);
+function skip() {
+  video.currentTime += parseFloat(this.dataset.skip);
+  ;
+} //CONTROLS///////
+
+
+var button__play = document.querySelector('.button__player');
+var button__speaker = document.querySelector('.button__speaker');
+var progress = playerSchema.querySelector('.progress');
+var progressBar = playerSchema.querySelector('.progress__filled');
+var skipButtons = playerSchema.querySelectorAll('[data-skip]');
+var ranges = playerSchema.querySelectorAll('.player__slider');
+var fullScreenButton = document.querySelector('.full__screen'); //EVENTS////////
+//Page charges
+
+window.onload = function () {
+  toggleButtonPlay();
+  toggleButtonMute();
+}; //play/pause button
+
+
+button__play.onclick = function () {
+  player.togglePlay();
+  toggleButtonPlay();
+}; //Muted button
+
+
+button__speaker.onclick = function () {
+  if (player.media.muted) {
+    player.unmute();
+  } else {
+    player.mute();
+  }
+
+  toggleButtonMute();
+};
+
+function toggleFullScreen() {
+  fullScreen = !fullScreen;
+  if (fullScreen) video.requestFullscreen();
 }
 
-function _updateCache() {
-  _updateCache = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee3(request) {
-    var cache, response;
-    return regeneratorRuntime.wrap(function _callee3$(_context3) {
-      while (1) {
-        switch (_context3.prev = _context3.next) {
-          case 0:
-            _context3.next = 2;
-            return caches.open('VERSION');
+video.addEventListener('timeupdate', handleProgress);
 
-          case 2:
-            cache = _context3.sent;
-            _context3.next = 5;
-            return fetch(request);
+video.onclick = function () {
+  player.togglePlay();
+  toggleButtonPlay();
+}; //Ranges for volume and progress
 
-          case 5:
-            response = _context3.sent;
-            return _context3.abrupt("return", cache.put(request, response));
 
-          case 7:
-          case "end":
-            return _context3.stop();
-        }
-      }
-    }, _callee3);
-  }));
-  return _updateCache.apply(this, arguments);
+ranges.forEach(function (range) {
+  return range.addEventListener('change', handleRangeUpdate);
+});
+ranges.forEach(function (range) {
+  return range.addEventListener('mousemove', handleRangeUpdate);
+}); //Handle calcs and change of progress
+
+var mousedown = false;
+progress.addEventListener('click', moveProgress);
+progress.addEventListener('mousemove', function (e) {
+  return mousedown && moveProgress(e);
+});
+progress.addEventListener('mousedown', function () {
+  return mousedown = true;
+});
+progress.addEventListener('mouseup', function () {
+  return mousedown = false;
+});
+skipButtons.forEach(function (button) {
+  return button.addEventListener('click', skip);
+});
+var fullScreen = false;
+fullScreenButton.addEventListener('click', toggleFullScreen);
+
+if ('serviceWorker' in Navigator) {
+  navigator.serviceWorker.register("/serviceWorker.js").catch(function (error) {
+    console.log(error.message);
+  });
 }
-},{}],"node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
+},{"./SimpleMediaPlayer":"assets/SimpleMediaPlayer.ts","./plugins/AutoPlay":"assets/plugins/AutoPlay.ts","./plugins/AutoPause":"assets/plugins/AutoPause.ts","/Users/anaarrabal/Web/Proyecto_js_avanzado/SimpleMediaPlayer/MediaPlayerJs/serviceWorker.js":[["serviceWorker.js","serviceWorker.js"],"serviceWorker.js.map","serviceWorker.js"]}],"node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 var OldModule = module.bundle.Module;
@@ -445,5 +577,5 @@ function hmrAcceptRun(bundle, id) {
     return true;
   }
 }
-},{}]},{},["node_modules/parcel-bundler/src/builtins/hmr-runtime.js","serviceWorker.js"], null)
-//# sourceMappingURL=/serviceWorker.js.map
+},{}]},{},["node_modules/parcel-bundler/src/builtins/hmr-runtime.js","assets/index.ts"], null)
+//# sourceMappingURL=/assets.71ddc51b.js.map

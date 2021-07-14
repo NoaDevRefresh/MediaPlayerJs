@@ -1,11 +1,11 @@
-import SimpleMediaPlayer from './SimpleMediaPlayer.js';
-import AutoPlay from './plugins/AutoPlay.js';
-import AutoPause from './plugins/AutoPause.js';
+import SimpleMediaPlayer from './SimpleMediaPlayer';
+import AutoPlay from './plugins/AutoPlay';
+import AutoPause from './plugins/AutoPause';
 
   //DEFINITIONS/////////
-  const playerSchema = document.querySelector('.player');
-  const video = document.querySelector('video.movie');
-  const player = new SimpleMediaPlayer({
+  const playerSchema: HTMLElement = document.querySelector('.player');
+  const video: HTMLMediaElement = document.querySelector('video.movie');
+  const player: SimpleMediaPlayer = new SimpleMediaPlayer({
     el: video, 
     plugins: [new AutoPlay(), new AutoPause()],
     });
@@ -17,17 +17,12 @@ import AutoPause from './plugins/AutoPause.js';
     }
     
 //FUNCTIONS///////
-function initMediaPlayer(){
-  //toggleButtons
-  toggleButtonPlay();
-  toggleButtonMute();
-}
 function toggleButtonMute(){
     const icon = player.media.muted ? '🔇' : '🔈';
     button__speaker.textContent = icon;
 }
 function handleProgress(){
-    const percent = (player.media.currentTime / player.media.duration) * 100;
+    const percent: number = (player.media.currentTime / player.media.duration) * 100;
     progressBar.style.flexBasis = `${percent}%`;
 }
 function toggleButtonPlay(){
@@ -47,17 +42,20 @@ function handleRangeUpdate() {
 }
 
 //CONTROLS///////
-const button__play = document.querySelector('.button__player');
-const button__speaker = document.querySelector('.button__speaker');
-const progress = playerSchema.querySelector('.progress');
-const progressBar = playerSchema.querySelector('.progress__filled');
+const button__play: HTMLElement = document.querySelector('.button__player');
+const button__speaker: HTMLElement = document.querySelector('.button__speaker');
+const progress: HTMLElement = playerSchema.querySelector('.progress');
+const progressBar: HTMLElement = playerSchema.querySelector('.progress__filled');
 const skipButtons = playerSchema.querySelectorAll('[data-skip]');
 const ranges = playerSchema.querySelectorAll('.player__slider');
-const fullScreenButton = document.querySelector('.full__screen');
+const fullScreenButton: HTMLElement = document.querySelector('.full__screen');
 
 //EVENTS////////
 //Page charges
-document.addEventListener("DOMContentLoaded", initMediaPlayer());
+window.onload = () => {
+  toggleButtonPlay();
+  toggleButtonMute();
+};
 //play/pause button
 button__play.onclick = () => {
     player.togglePlay();
@@ -74,7 +72,7 @@ button__speaker.onclick = () => {
 }
 function toggleFullScreen(){
   fullScreen = !fullScreen;
-  fullScreen ? video.requestFullscreen() : video.exitFullscreen();
+  if(fullScreen)  video.requestFullscreen();
 }
 
 video.addEventListener('timeupdate', handleProgress);

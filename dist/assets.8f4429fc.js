@@ -125,146 +125,140 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = void 0;
 
-function SimpleMediaPlayer(config) {
-  this.media = config.el;
-  this.plugins = config.plugins || []; //Default value of empty array to prevent wrong state.
-
-  this._initPlugins();
-}
-
-SimpleMediaPlayer.prototype._initPlugins = function () {
-  var _this = this;
-
-  var player = {
-    play: function play() {
-      return _this.play();
-    },
-    pause: function pause() {
-      return _this.pause();
-    },
-    media: this.media,
-
-    get muted() {
-      return this.media.muted;
-    },
-
-    set muted(value) {
-      this.media.muted = value;
-    }
-
-  };
-  this.plugins.forEach(function (plugin) {
-    plugin.run(player); //Method run must be implemented for each active plugin
-  });
-};
-
-SimpleMediaPlayer.prototype.play = function () {
-  this.media.play();
-};
-
-SimpleMediaPlayer.prototype.pause = function () {
-  this.media.pause();
-};
-
-SimpleMediaPlayer.prototype.togglePlay = function () {
-  this.media.paused ? this.play() : this.pause();
-};
-
-SimpleMediaPlayer.prototype.mute = function () {
-  this.media.muted = true;
-};
-
-SimpleMediaPlayer.prototype.unmute = function () {
-  this.media.muted = false;
-}; // SimpleMediaPlayer.prototype.toggleMute = function(){
-//   this.media.muted = !this.media.muted;
-//}
-
-
-var _default = SimpleMediaPlayer;
-exports.default = _default;
-},{}],"assets/plugins/AutoPlay.js":[function(require,module,exports) {
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = void 0;
-
-function AutoPlay() {}
-
-AutoPlay.prototype.run = function (player) {
-  if (!player.muted) {
-    player.muted = true;
-  } //browser won't let it play on charging for accessibility, unless it is muted
-
-
-  player.play();
-};
-
-var _default = AutoPlay;
-exports.default = _default;
-},{}],"assets/plugins/AutoPause.js":[function(require,module,exports) {
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = void 0;
-
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
-var AutoPause = /*#__PURE__*/function () {
-  function AutoPause() {
-    _classCallCheck(this, AutoPause);
+var SimpleMediaPlayer = /*#__PURE__*/function () {
+  function SimpleMediaPlayer(config) {
+    _classCallCheck(this, SimpleMediaPlayer);
 
+    this.media = config.el;
+    this.plugins = config.plugins || []; //Default value of empty array to prevent wrong state.
+
+    this._initPlugins();
+  }
+
+  _createClass(SimpleMediaPlayer, [{
+    key: "_initPlugins",
+    value: function _initPlugins() {
+      var _this = this;
+
+      this.plugins.forEach(function (plugin) {
+        plugin.run(_this); //Method run must be implemented for each active plugin
+      });
+    }
+  }, {
+    key: "play",
+    value: function play() {
+      this.media.play();
+    }
+  }, {
+    key: "pause",
+    value: function pause() {
+      this.media.pause();
+    }
+  }, {
+    key: "togglePlay",
+    value: function togglePlay() {
+      this.media.paused ? this.play() : this.pause();
+    }
+  }, {
+    key: "mute",
+    value: function mute() {
+      this.media.muted = true;
+    }
+  }, {
+    key: "unmute",
+    value: function unmute() {
+      this.media.muted = false;
+    }
+  }]);
+
+  return SimpleMediaPlayer;
+}(); // SimpleMediaPlayer.prototype.toggleMute = function(){
+//   this.media.muted = !this.media.muted;
+//}
+
+
+var _default = SimpleMediaPlayer;
+exports.default = _default;
+},{}],"assets/plugins/AutoPlay.ts":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var AutoPlay =
+/** @class */
+function () {
+  function AutoPlay() {}
+
+  AutoPlay.prototype.run = function (player) {
+    if (!player.media.muted) {
+      player.mute();
+    } //browser won't let it play on charging for accessibility, unless it is muted
+
+
+    player.play();
+  };
+
+  ;
+  return AutoPlay;
+}();
+
+exports.default = AutoPlay;
+},{}],"assets/plugins/AutoPause.ts":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var AutoPause =
+/** @class */
+function () {
+  function AutoPause() {
     this.threshold = 0.25;
     this.handleIntersection = this.handleIntersection.bind(this);
     this.handleVisibility = this.handleVisibility.bind(this);
   }
 
-  _createClass(AutoPause, [{
-    key: "run",
-    value: function run(player) {
-      this.player = player;
-      var observer = new IntersectionObserver(this.handleIntersection, {
-        threshold: this.threshold
-      });
-      observer.observe(this.player.media);
-      document.addEventListener('visibilitychange', this.handleVisibility);
-    }
-  }, {
-    key: "handleIntersection",
-    value: function handleIntersection(entries) {
-      var entry = entries[0];
-      var isVisible = entry.intersectionRatio >= this.threshold;
-      isVisible ? this.player.play() : this.player.pause();
-    }
-  }, {
-    key: "handleVisibility",
-    value: function handleVisibility() {
-      var isVisible = document.visibilityState === 'visible';
-      isVisible ? this.player.play() : this.player.pause();
-    }
-  }]);
+  AutoPause.prototype.run = function (player) {
+    this.player = player;
+    var observer = new IntersectionObserver(this.handleIntersection, {
+      threshold: this.threshold
+    });
+    observer.observe(this.player.media);
+    document.addEventListener('visibilitychange', this.handleVisibility);
+  };
+
+  AutoPause.prototype.handleIntersection = function (entries) {
+    var entry = entries[0];
+    var isVisible = entry.intersectionRatio >= this.threshold;
+    isVisible ? this.player.play() : this.player.pause();
+  };
+
+  AutoPause.prototype.handleVisibility = function () {
+    var isVisible = document.visibilityState === 'visible';
+    isVisible ? this.player.play() : this.player.pause();
+  };
 
   return AutoPause;
 }();
 
-var _default = AutoPause;
-exports.default = _default;
+exports.default = AutoPause;
 },{}],"assets/index.js":[function(require,module,exports) {
 "use strict";
 
 var _SimpleMediaPlayer = _interopRequireDefault(require("./SimpleMediaPlayer.js"));
 
-var _AutoPlay = _interopRequireDefault(require("./plugins/AutoPlay.js"));
+var _AutoPlay = _interopRequireDefault(require("./plugins/AutoPlay.ts"));
 
-var _AutoPause = _interopRequireDefault(require("./plugins/AutoPause.js"));
+var _AutoPause = _interopRequireDefault(require("./plugins/AutoPause.ts"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -389,7 +383,7 @@ if ('serviceWorker' in Navigator) {
     console.log(error.message);
   });
 }
-},{"./SimpleMediaPlayer.js":"assets/SimpleMediaPlayer.js","./plugins/AutoPlay.js":"assets/plugins/AutoPlay.js","./plugins/AutoPause.js":"assets/plugins/AutoPause.js","/Users/anaarrabal/Web/Proyecto_js_avanzado/SimpleMediaPlayer/MediaPlayerJs/serviceWorker.js":[["serviceWorker.js","serviceWorker.js"],"serviceWorker.js.map","serviceWorker.js"]}],"node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
+},{"./SimpleMediaPlayer.js":"assets/SimpleMediaPlayer.js","./plugins/AutoPlay.ts":"assets/plugins/AutoPlay.ts","./plugins/AutoPause.ts":"assets/plugins/AutoPause.ts","/Users/anaarrabal/Web/Proyecto_js_avanzado/SimpleMediaPlayer/MediaPlayerJs/serviceWorker.js":[["serviceWorker.js","serviceWorker.js"],"serviceWorker.js.map","serviceWorker.js"]}],"node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 var OldModule = module.bundle.Module;
@@ -417,7 +411,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "52097" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "56838" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
