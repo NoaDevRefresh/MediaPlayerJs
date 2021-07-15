@@ -131,6 +131,7 @@ function () {
     this.media = config.el;
     this.plugins = config.plugins || []; //Default value of empty array to prevent wrong state.
 
+    this.initPlayer();
     this.initPlugins();
   }
 
@@ -160,6 +161,13 @@ function () {
 
   SimpleMediaPlayer.prototype.unmute = function () {
     this.media.muted = false;
+  };
+
+  SimpleMediaPlayer.prototype.initPlayer = function () {
+    this.container = document.createElement('div');
+    this.container.style.position = 'relative';
+    this.media.parentNode.insertBefore(this.container, this.media);
+    this.container.appendChild(this.media);
   };
 
   return SimpleMediaPlayer;
@@ -235,7 +243,155 @@ function () {
 }();
 
 exports.default = AutoPause;
-},{}],"assets/index.ts":[function(require,module,exports) {
+},{}],"assets/plugins/Ads/Ads.ts":[function(require,module,exports) {
+"use strict";
+
+var __spreadArray = this && this.__spreadArray || function (to, from) {
+  for (var i = 0, il = from.length, j = to.length; i < il; i++, j++) {
+    to[j] = from[i];
+  }
+
+  return to;
+};
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+var ALL_ADS = [{
+  imageUrl: "./remote_work.jpg",
+  title: 'Curso Profesional de JavaScript',
+  body: 'Mejora tus habilidades en Javascript. Conoce Typescript para mejorar el control de tus variables.',
+  url: '#'
+}, {
+  imageUrl: "./remote_work.jpg",
+  title: 'Curso Profesional de JavaScript',
+  body: 'Mejora tus habilidades en Javascript. Conoce Typescript para mejorar el control de tus variables.',
+  url: '#'
+}, {
+  imageUrl: "./remote_work.jpg",
+  title: 'Curso Profesional de JavaScript',
+  body: 'Mejora tus habilidades en Javascript. Conoce Typescript para mejorar el control de tus variables.',
+  url: '#'
+}, {
+  imageUrl: "./remote_work.jpg",
+  title: 'Curso Profesional de JavaScript',
+  body: 'Mejora tus habilidades en Javascript. Conoce Typescript para mejorar el control de tus variables.',
+  url: '#'
+}, {
+  imageUrl: 'https://unsplash.com/photos/mQmuv-3jAOc',
+  title: 'Curso Profesional de JavaScript',
+  body: 'Mejora tus habilidades en Javascript. Conoce Typescript para mejorar el control de tus variables.',
+  url: '#'
+}, {
+  imageUrl: "./remote_work.jpg",
+  title: 'Curso Profesional de JavaScript',
+  body: 'Mejora tus habilidades en Javascript. Conoce Typescript para mejorar el control de tus variables.',
+  url: '#'
+}, {
+  imageUrl: "remote_work.jpg",
+  title: 'Curso Profesional de JavaScript',
+  body: 'Mejora tus habilidades en Javascript. Conoce Typescript para mejorar el control de tus variables.',
+  url: '#'
+}, {
+  imageUrl: "./remote_work.jpg",
+  title: 'Curso Profesional de JavaScript',
+  body: 'Mejora tus habilidades en Javascript. Conoce Typescript para mejorar el control de tus variables.',
+  url: '#'
+}];
+
+var Ads =
+/** @class */
+function () {
+  function Ads() {
+    this.initAds();
+  }
+
+  ;
+
+  Ads.getInstance = function () {
+    if (!Ads.instance) {
+      Ads.instance = new Ads();
+    }
+
+    return Ads.instance;
+  };
+
+  Ads.prototype.initAds = function () {
+    this.ads = __spreadArray([], ALL_ADS);
+  };
+
+  Ads.prototype.getAd = function () {
+    if (this.ads.length === 0) this.initAds();
+    return this.ads.pop();
+  };
+
+  return Ads;
+}();
+
+exports.default = Ads;
+},{}],"assets/plugins/Ads/index.ts":[function(require,module,exports) {
+"use strict";
+
+var __importDefault = this && this.__importDefault || function (mod) {
+  return mod && mod.__esModule ? mod : {
+    "default": mod
+  };
+};
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var Ads_1 = __importDefault(require("./Ads"));
+
+var AdsPlugins =
+/** @class */
+function () {
+  function AdsPlugins() {
+    this.ads = Ads_1.default.getInstance();
+    this.adsContainer = document.createElement('div');
+    this.handleTimeUpdate = this.handleTimeUpdate.bind(this);
+  }
+
+  ;
+
+  AdsPlugins.prototype.run = function (player) {
+    this.player = player;
+    this.media = this.player.media;
+    this.media.addEventListener('timeupdate', this.handleTimeUpdate);
+    this.player.container.appendChild(this.adsContainer);
+  };
+
+  AdsPlugins.prototype.handleTimeUpdate = function () {
+    var currentTime = Math.floor(this.media.currentTime);
+
+    if (currentTime % 30 === 0) {
+      this.renderAd();
+    }
+  };
+
+  AdsPlugins.prototype.renderAd = function () {
+    var _this = this;
+
+    if (this.currentAd) {
+      return;
+    }
+
+    ;
+    var ad = this.ads.getAd();
+    this.currentAd = ad;
+    this.adsContainer.innerHTML = " <div class=\"ads\">\n            <a  class=\"ads__link\" href=\"" + this.currentAd.url + "\" target=\"_blank\">\n                <img class=\"ads__img\" src=\"" + this.currentAd.imageUrl + "\" />\n                <div class=\"ads__info\">\n                <h5 class=\"ads__title\">" + this.currentAd.title + "</h5>\n                <p class=\"ads__body\">" + this.currentAd.body + "</p>\n                </div>\n            </a>\n        </div>";
+    setTimeout(function () {
+      _this.currentAd = null;
+      _this.adsContainer.innerHTML = '';
+    }, 10000);
+  };
+
+  return AdsPlugins;
+}();
+
+exports.default = AdsPlugins;
+},{"./Ads":"assets/plugins/Ads/Ads.ts"}],"assets/index.ts":[function(require,module,exports) {
 "use strict";
 
 var __importDefault = this && this.__importDefault || function (mod) {
@@ -252,14 +408,16 @@ var SimpleMediaPlayer_1 = __importDefault(require("./SimpleMediaPlayer"));
 
 var AutoPlay_1 = __importDefault(require("./plugins/AutoPlay"));
 
-var AutoPause_1 = __importDefault(require("./plugins/AutoPause")); //DEFINITIONS/////////
+var AutoPause_1 = __importDefault(require("./plugins/AutoPause"));
+
+var Ads_1 = __importDefault(require("./plugins/Ads")); //DEFINITIONS/////////
 
 
 var playerSchema = document.querySelector('.player');
 var video = document.querySelector('video.movie');
 var player = new SimpleMediaPlayer_1.default({
   el: video,
-  plugins: [new AutoPlay_1.default(), new AutoPause_1.default()]
+  plugins: [new AutoPlay_1.default(), new AutoPause_1.default(), new Ads_1.default()]
 });
 
 if ('serviceWorker' in navigator) {
@@ -373,7 +531,7 @@ if ('serviceWorker' in Navigator) {
     console.log(error.message);
   });
 }
-},{"./SimpleMediaPlayer":"assets/SimpleMediaPlayer.ts","./plugins/AutoPlay":"assets/plugins/AutoPlay.ts","./plugins/AutoPause":"assets/plugins/AutoPause.ts","/Users/anaarrabal/Web/Proyecto_js_avanzado/SimpleMediaPlayer/MediaPlayerJs/serviceWorker.js":[["serviceWorker.js","serviceWorker.js"],"serviceWorker.js.map","serviceWorker.js"]}],"node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
+},{"./SimpleMediaPlayer":"assets/SimpleMediaPlayer.ts","./plugins/AutoPlay":"assets/plugins/AutoPlay.ts","./plugins/AutoPause":"assets/plugins/AutoPause.ts","./plugins/Ads":"assets/plugins/Ads/index.ts","/Users/anaarrabal/Web/Proyecto_js_avanzado/SimpleMediaPlayer/MediaPlayerJs/serviceWorker.js":[["serviceWorker.js","serviceWorker.js"],"serviceWorker.js.map","serviceWorker.js"]}],"node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 var OldModule = module.bundle.Module;
@@ -401,7 +559,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "56838" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "49367" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
