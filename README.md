@@ -6,3 +6,6 @@ AutoPlay. Automatic reproduction of videos on mute.
 
 # Plugin 2
 AutoPause. Automaticly pause the player when the user changes tabs or is watching something else.
+
+# Plugin 3
+Ads. Posibility for ads at the bottom of the videos.
